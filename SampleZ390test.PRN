@@ -1,0 +1,107 @@
+16:01:58 SampleZ390test MZ390 START USING z390 V1.5.06 ON J2SE 11.0.1 02/16/21
+AZ390I Copyright 2011 Automated Software Tools Corporation
+AZ390I z390 is licensed under GNU General Public License
+AZ390I program = C:\MyZ390\SampleZ390test
+AZ390I options = sysmac(C:\PROGRA~2\AUTOMA~1\z390\mac+.) 
+  syscpy(C:\PROGRA~2\AUTOMA~1\z390\mac+.)
+External Symbol Definitions
+ ESD=0001 LOC=00000000 LEN=00000068 TYPE=CST NAME=$PRIVATE
+Assembler Listing
+000000                                        (1/1)1 * Sample BAL program
+000000                                        (1/2)2 * Assembled using Z390
+000000                                        (1/3)3 * Z390I V1.5.06
+000000                                        (1/4)4 * Copyright 2011 Automated Software Tools Corporation
+000000                                        (1/5)5 * z390 is licensed under GNU General Public License
+000000 05C0                                   (1/6)6          BALR  R12,0
+000002                                        (1/7)7          USING *,R12
+LISTUSE $PRIVATE ESD=0001 LOC=00000002 LEN=01000 REG=C OFF=00000 LAB=
+000002 92E7C048                00004A         (1/8)8          MVI   AREA1,C'X'
+000006 95E7C048                00004A         (1/9)9          CLI   AREA1,C'X'
+00000A 4780C01A                00001C       (1/10)10          BE    CONTINUE
+00000E                                      (1/11)11 * display MSG2 to the terminal
+00000E 4100C05C                00005E       (1/12)12          LA    R0,MSG2
+000012 41100009                             (1/13)13          LA    R1,9
+000016 0AFF                                 (1/14)14          SVC   255
+000018 47F0C042                000044       (1/15)15          B     RETURN
+00001C                  0000001C            (1/16)16 CONTINUE EQU   *
+00001C                                      (1/17)17 * display MSG1 to the terminal
+00001C 4100C057                000059       (1/18)18          LA    R0,MSG1
+000020 41100005                             (1/19)19          LA    R1,5
+000024 0AFF                                 (1/20)20          SVC   255
+000026 4130C049                00004B       (1/21)21          LA    R3,AREA1+1
+00002A 4140000E                             (1/22)22          LA    R4,14
+00002E 92F03000                             (1/23)23 LOOP     MVI   0(R3),C'0'
+000032 41330001                             (1/24)24          LA    R3,1(R3)
+000036 4640C02C                00002E       (1/25)25          BCT   R4,LOOP
+00003A                                      (1/26)26 * display AREA1 to the terminal
+00003A 4100C048                00004A       (1/27)27          LA    R0,AREA1
+00003E 4110000F                             (1/28)28          LA    R1,15
+000042 0AFF                                 (1/29)29          SVC   255
+000044                  00000044            (1/30)30 RETURN   EQU   *
+000044                                      (1/31)31 * set a return code
+000044 41F00000                             (1/32)32          LA    R15,0
+000048                                      (1/33)33 * return via R14; good practice to save R14 in case it is used
+000048 07FE                                 (1/34)34          BR    R14
+00004A                                      (1/35)35 *
+00004A                                      (1/36)36 * data areas
+00004A                                      (1/37)37 *
+00004A                                      (1/38)38 AREA1    DS    XL15
+000059 C5D8E4C1D3                           (1/39)39 MSG1     DC    CL5'EQUAL'
+00005E D5D6E340C5D8E4C1                     (1/40)40 MSG2     DC    CL9'NOT EQUAL'
+000067                                      (1/41)41 * following DC is only needed if previous statement was a DS
+000067                                      (1/42)42 * good to put one in anyway in case you forget
+000067 F0                                   (1/43)43          DC    CL1'0'
+000068                                      (1/44)44          LTORG 
+000068                  00000000            (1/45)45 R0       EQU   0
+000068                  00000001            (1/46)46 R1       EQU   1
+000068                  00000002            (1/47)47 R2       EQU   2
+000068                  00000003            (1/48)48 R3       EQU   3
+000068                  00000004            (1/49)49 R4       EQU   4
+000068                  00000005            (1/50)50 R5       EQU   5
+000068                  00000006            (1/51)51 R6       EQU   6
+000068                  00000007            (1/52)52 R7       EQU   7
+000068                  00000008            (1/53)53 R8       EQU   8
+000068                  00000009            (1/54)54 R9       EQU   9
+000068                  0000000A            (1/55)55 R10      EQU   10
+000068                  0000000B            (1/56)56 R11      EQU   11
+000068                  0000000C            (1/57)57 R12      EQU   12
+000068                  0000000D            (1/58)58 R13      EQU   13
+000068                  0000000E            (1/59)59 R14      EQU   14
+000068                  0000000F            (1/60)60 R15      EQU   15
+000068                                      (1/61)61          END 
+
+Symbol Table Listing
+
+ SYM=$PRIVATE LOC=00000000 LEN=00000068 ESD=0001 TYPE=CST  XREF=6 
+ SYM=AREA1    LOC=0000004A LEN=0000000F ESD=0001 TYPE=REL  XREF=38 8 9 21 27 
+ SYM=CONTINUE LOC=0000001C LEN=00000001 ESD=0001 TYPE=REL  XREF=16 10 
+ SYM=LOOP     LOC=0000002E LEN=00000004 ESD=0001 TYPE=REL  XREF=23 25 
+ SYM=MSG1     LOC=00000059 LEN=00000005 ESD=0001 TYPE=REL  XREF=39 18 
+ SYM=MSG2     LOC=0000005E LEN=00000009 ESD=0001 TYPE=REL  XREF=40 12 
+ SYM=R0       LOC=00000000 LEN=00000001 ESD=0000 TYPE=ABS  XREF=45 12 18 27 
+ SYM=R10      LOC=0000000A LEN=00000001 ESD=0000 TYPE=ABS  XREF=55 
+ SYM=R1       LOC=00000001 LEN=00000001 ESD=0000 TYPE=ABS  XREF=46 13 19 28 
+ SYM=R11      LOC=0000000B LEN=00000001 ESD=0000 TYPE=ABS  XREF=56 
+ SYM=R12      LOC=0000000C LEN=00000001 ESD=0000 TYPE=ABS  XREF=57 6 7 
+ SYM=R13      LOC=0000000D LEN=00000001 ESD=0000 TYPE=ABS  XREF=58 
+ SYM=R14      LOC=0000000E LEN=00000001 ESD=0000 TYPE=ABS  XREF=59 34 
+ SYM=R15      LOC=0000000F LEN=00000001 ESD=0000 TYPE=ABS  XREF=60 32 
+ SYM=R2       LOC=00000002 LEN=00000001 ESD=0000 TYPE=ABS  XREF=47 
+ SYM=R3       LOC=00000003 LEN=00000001 ESD=0000 TYPE=ABS  XREF=48 21 23 24 
+ SYM=R4       LOC=00000004 LEN=00000001 ESD=0000 TYPE=ABS  XREF=49 22 25 
+ SYM=R5       LOC=00000005 LEN=00000001 ESD=0000 TYPE=ABS  XREF=50 
+ SYM=R6       LOC=00000006 LEN=00000001 ESD=0000 TYPE=ABS  XREF=51 
+ SYM=R7       LOC=00000007 LEN=00000001 ESD=0000 TYPE=ABS  XREF=52 
+ SYM=R8       LOC=00000008 LEN=00000001 ESD=0000 TYPE=ABS  XREF=53 
+ SYM=R9       LOC=00000009 LEN=00000001 ESD=0000 TYPE=ABS  XREF=54 
+ SYM=RETURN   LOC=00000044 LEN=00000001 ESD=0001 TYPE=REL  XREF=30 15 
+
+Literal Table Listing
+
+ 
+AZ390I total mnote warnings = 0
+AZ390I total mnote errors   = 0
+AZ390I max   mnote level    = 0
+AZ390I total mz390 errors   = 0
+AZ390I total az390 errors   = 0
+16:01:59 SampleZ390test MZ390 ENDED   RC= 0 SEC= 0 MEM(MB)= 49 IO=172

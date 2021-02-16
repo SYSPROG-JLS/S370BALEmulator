@@ -1,0 +1,61 @@
+* Sample BAL program 
+* Assembled using Z390
+* Z390I V1.5.06
+* Copyright 2011 Automated Software Tools Corporation
+* z390 is licensed under GNU General Public License
+         BALR  R12,0 
+         USING *,R12
+         MVI   AREA1,C'X'
+         CLI   AREA1,C'X'
+         BE    CONTINUE
+* display MSG2 to the terminal
+         LA    R0,MSG2
+         LA    R1,9
+         SVC   255
+         B     RETURN    
+CONTINUE EQU   *
+* display MSG1 to the terminal
+         LA    R0,MSG1
+         LA    R1,5
+         SVC   255
+         LA    R3,AREA1+1
+         LA    R4,14
+LOOP     MVI   0(R3),C'0'
+         LA    R3,1(R3)
+         BCT   R4,LOOP
+* display AREA1 to the terminal
+         LA    R0,AREA1
+         LA    R1,15
+         SVC   255
+RETURN   EQU   *
+* set a return code
+         LA    R15,0
+* return via R14; good practice to save R14 in case it is used 
+         BR    R14
+*
+* data areas
+*
+AREA1    DS    XL15
+MSG1     DC    CL5'EQUAL'
+MSG2     DC    CL9'NOT EQUAL'
+* following DC is only needed if previous statement was a DS
+* good to put one in anyway in case you forget
+         DC    CL1'0'
+         LTORG
+R0       EQU   0
+R1       EQU   1 
+R2       EQU   2 
+R3       EQU   3
+R4       EQU   4
+R5       EQU   5 
+R6       EQU   6
+R7       EQU   7
+R8       EQU   8
+R9       EQU   9
+R10      EQU   10
+R11      EQU   11
+R12      EQU   12
+R13      EQU   13
+R14      EQU   14 
+R15      EQU   15
+         END
