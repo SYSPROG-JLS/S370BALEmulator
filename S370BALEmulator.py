@@ -1,5 +1,5 @@
 # 
-# This file is part of the S370BALEmulator distribution (https://github.com/xxxx or http://xxx.github.io).
+# This file is part of the XXX distribution (https://github.com/xxxx or http://xxx.github.io).
 # Copyright (c) 2021 James Salvino.
 # 
 # This program is free software: you can redistribute it and/or modify  
@@ -2652,14 +2652,22 @@ while True:
             memory_contents = '[' + ' '.join(instrdata_list[addr_int:addr_int+num_of_bytes_int]) + ']'
             cmd_window.addstr(2, 2, memory_contents)            
             
-        #handle display field (df) command - format:  df valid_field_name
+        #handle display field (df) command - format:  df valid_field_name or df valid_field_name(dsect_reg)
+        #example: assume FIELDA is addressed directly off the CSECT base register then 'df FIELDA' means
+        #means lookup FIELDA in symbol_dict, then find its start_address
+        #example: assume FIELD1 is in a DSECT pointed to by R10 then 'df FIELD1(10)'  means lookup FIELD1 
+        #in symbol_dict, find its start_address, then add contents of dsect pointer R10 to start_address
         #valid_field_name is a data area defined by a DS or DC 
         #and is a key in the symbol_dict dictionary
         elif screen_str.startswith('df '):
-            field = screen_str[3:]
+            field_list = screen_str[3:].rstrip(')').split('(')
+            field = field_list[0]
             try:
                 st_addr, field_len = symbol_dict[field.ljust(8).upper()]
-                st_addr_int = cvthex2int(st_addr)
+                if len(field_list) == 2:
+                    st_addr_int = cvthex2int(st_addr) + regs[int(field_list[1])]
+                else:
+                    st_addr_int = cvthex2int(st_addr)
                 field_len_int = cvthex2int(field_len)
                 #clamp to a max of 48 bytes
                 if field_len_int > 48:
