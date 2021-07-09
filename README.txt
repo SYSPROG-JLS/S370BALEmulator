@@ -16,7 +16,7 @@
 #
 
 S370BALEmulator README
-02/16/2021
+07/09/2021
 
 - purpose: to emulate the 94 problem-state IBM S/370 Basic Assembly Language (BAL) instructions
            to teach IBM S/370 Basic Assembly Language (BAL) programming
@@ -24,15 +24,39 @@ S370BALEmulator README
            to run programs written in IBM S/370 Basic Assembly Language (BAL) on your PC
 
 - you need to have an IBM S/370 Basic Assembly Language (BAL) assembler 
-    you can use IFOX00 in MVS3.8J running under Hercules or you can use the Z390 Portable 
-    Mainframe Assembler and Emulator from Automated Software Tools Corporation (Copyright 
+    + you can use IFOX00 in MVS3.8J running under Hercules 
+    + or you can use the Z390 Portable Mainframe Assembler and Emulator from Automated Software Tools Corporation (Copyright 
     2011-13 Automated Software Tools Corporation)
+    + or you can use S370BALAsm (my assembler) found at https://github.com/SYSPROG-JLS/S370BALAsm
 
-- written for Python V3+ (ncurses package needs to be installed also)
+- written for Python V3+
+    See https://www.python.org/downloads/ for instructions for downloading
+    and installing Python on your PC or Mac
+    
+    The curses package is required by the S370BALEmulator.
+    This package comes with the Python standard library. 
+    In Linux and Mac, the curses dependencies should already be 
+    installed so there is no extra steps needed.
+ 
+    On Windows, you need to install one special Python 
+    package, windows-curses available on PyPI to add support.
+
+    # Needed in Windows only
+    python -m pip install windows-curses
+
+    You can verify everything works by running a Python interpreter 
+    and attempting to import curses. If you do not get any errors, you 
+    are in good shape.
+
+    >>> import curses
+    >>>
 
 - how to run:
     python S370BALEmulator            -  run the emulator in non-interative mode
     python S370BALEmulator -debug     -  run the emulator in interactive debug mode
+    
+    Running in interactive debug mode brings up the terminal user interface to
+    display reqisters, memory, and allow you to set breakpoints, etc.
 
 - S370BALEmulator.py requires 3 Python data structures in your current
     working directory:
@@ -93,6 +117,11 @@ S370BALEmulator README
   . If you are using another Assembler, please refer to 'Z390-ProcessPRN_OBJ.py'
     and 'MVS38J-ProcessPRN_OBJ.py' for example code to aid you in writing your
     own pre-processor.
+    
+  . If you are using my assembler (S370BALAsm), the 3 required data structures 
+    (source_code_dict, symdict, and instrdata) are created in the current working directory
+    during the assembly and no further pre-processing is required. Again
+    my assembler can be found at https://github.com/SYSPROG-JLS/S370BALAsm
 
 -------------------------------------------------------------------------------
 
