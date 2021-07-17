@@ -188,7 +188,7 @@ usual IBM SVC numbers are emulated.
 
 
 Important Notes: 1) It is easy to add your own SVC routines to do anything you like. 
-                 2) SVCs 255 - 251 do not display their output immediately in interactive
+                 2) SVCs 254 - 251 do not display their output immediately in interactive
                     debug mode (it is queued up due to ncurses). If you are running
                     under Windows, only after the program ends will you see the output.
                     If you are running under Linux, the output gets lost (need to research).
