@@ -16,7 +16,7 @@
 #
 
 S370BALEmulator README
-07/09/2021
+07/19/2021
 
 - purpose: to emulate the 94 problem-state IBM S/370 Basic Assembly Language (BAL) instructions
            to teach IBM S/370 Basic Assembly Language (BAL) programming
@@ -113,15 +113,25 @@ S370BALEmulator README
      Following a successful assembly 'HMVS01.LIST(EMUTEST)' and 'HMVS01.OBJ(EMUTEST)'
      are transferred to the PC using IND$FILE as EMUTEST.txt and EMUTEST.OBJ
      respectively.
-
+     
+  . If you are using the Z390 Portable Mainframe Assembler and Emulator (Copyright 
+     2011-13 Automated Software Tools Corporation) or IFOX00 running under MVS3.8J,
+     you will NOT be able to use file access MACROs such as OPEN, CLOSE, GET, PUT, or DCB.
+     You will need to code all PC file access in "low-level" assembler code as 
+     demonstrated in the S370*Sample.mlc sample code files or write your own MACROs 
+     for use with those assemblers.
+     
   . If you are using another Assembler, please refer to 'Z390-ProcessPRN_OBJ.py'
     and 'MVS38J-ProcessPRN_OBJ.py' for example code to aid you in writing your
     own pre-processor.
     
   . If you are using my assembler (S370BALAsm), the 3 required data structures 
     (source_code_dict, symdict, and instrdata) are created in the current working directory
-    during the assembly and no further pre-processing is required. Again
-    my assembler can be found at https://github.com/SYSPROG-JLS/S370BALAsm
+    during the assembly and no further pre-processing is required. 
+    Also there is the added benefit that you ARE able to use file access MACROs 
+    such as OPEN, CLOSE, GET, PUT, or DCB in your code. 
+    Again my assembler can be found at https://github.com/SYSPROG-JLS/S370BALAsm.
+    
 
 -------------------------------------------------------------------------------
 
