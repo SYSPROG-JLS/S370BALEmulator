@@ -22,6 +22,11 @@ import sys
 import pickle
 import curses
 
+# output to file(works on Linux too)
+sys.stdout = open("OUTPUT.TXT", 'w')
+
+
+
 #unpickle the source code dictionary 
 source_code_dict = pickle.load( open( "sourcecode.p", "rb" ) )
 
@@ -591,7 +596,18 @@ def Branch_on_Index_code(HorLE):
         if (sum - op3_compare_val) <= 0:
             return calc_address(_B2, _D2)
         else:
-            return program_counter + i_field_num_bytes    
+            return program_counter + i_field_num_bytes
+
+
+
+# Function to wrap text and add it to the window
+def wrap_and_addstr(window, y, x, text, width):
+    start = 0
+    while start < len(text):
+        window.addstr(y, x, text[start:start + width])
+        y += 1
+        start += width
+
 
 
 #ED / EDMK
@@ -2278,7 +2294,7 @@ def SVC():
     #OC,R1,R2   
     SVCnum = (_R1 * 16) + _R2
     
-    if SVCnum == 255:                       #print alphanumeric data to terminal
+    if SVCnum == 255:                       #print alphanumeric data to OUTPUT.TXT
         addr = cast_to_type(regs[0],int)    #register 0 points to data
         numb = cast_to_type(regs[1],int)    #register 1 is the data length
         if not Debug:
@@ -2287,19 +2303,21 @@ def SVC():
             print(' ')
         else:
             for ebyte in instrdata_list[addr:addr+numb]:
-                term_output += chr(int(EBC2ASC[int(ebyte,16)],16))
+                term_output += chr(int(EBC2ASC[int(ebyte,16)],16)) #output to debug window
             
         
-    elif SVCnum == 254:   #print contents of register 0 to terminal as signed integer
+    elif SVCnum == 254:   #print contents of register 0 to OUTPUT.TXT as signed integer
         print(cast_to_type(regs[0],int))
+        term_output += str(cast_to_type(regs[0],int)) #output to debug window
         
-    elif SVCnum == 253:   #print contents of register 0 to terminal as 4 byte hex string
+    elif SVCnum == 253:   #print contents of register 0 to terminal as 4 byte hex string to OUTPUT.TXT
         print(cast_to_type(regs[0],str))
+        term_output += str(cast_to_type(regs[0],str)) #output to debug window
         
-    elif SVCnum == 252:   #print contents of the cond_code
+    elif SVCnum == 252:   #print contents of the cond_code to OUTPUT.TXT
         print(cond_code)
         
-    elif SVCnum == 251:   #print the contents of the regs
+    elif SVCnum == 251:   #print the contents of the regs to OUTPUT.TXT
         print(regs)
         
     elif SVCnum == 250:   #sleep for x ms
@@ -2491,16 +2509,16 @@ if Debug:
     screen = curses.initscr()
 
     num_rows, num_cols = screen.getmaxyx()
-    if num_rows < 18 or num_cols < 75:
+    if num_rows < 23 or num_cols < 76:
         print("Screen too small")
-        print("You must have > 18 rows and > 75 cols")
+        print("You must have > 23 rows and > 76 cols")
         print("Your current Rows:    %d" % num_rows)
         print("Your current Columns: %d" % num_cols)
         print("Aborting")
         exit()
     
     # create Command Window
-    cmd_window = curses.newwin(5, 75, 12, 1) # lines, columns, start line, start column
+    cmd_window = curses.newwin(10, 75, 12, 1) # lines, columns, start line, start column
 
 # Fetch - Decode - Execute Loop
 while True:
@@ -2600,6 +2618,7 @@ while True:
         cmd_window.clear()
         cmd_window.border(0)
         cmd_window.addstr(1, 2, "Command: ")
+        term_output = term_output.replace('\0', '')  # Remove null characters
         cmd_window.addstr(2, 13, term_output)
         term_output = ''
         cmd_window.refresh()
@@ -2614,26 +2633,34 @@ while True:
             last_command = ''
             
         #read the command     
-        screen_str = cmd_window.getstr(1, 11, 30).decode("utf-8")  
-        #decode changes byte object to string object
+        screen_str = cmd_window.getstr(1, 11, 30).decode("utf-8")
+        cmd_window.border(0)  #so that border will stay intact after ENTER
+       
+       #decode changes byte object to string object
         
         #handle single step (s) command - format:  s
-        if screen_str == 's':
+        if screen_str.lower() == 's':
             break
             
         #handle go (g) command - format:  g
-        elif screen_str == 'g':
+        elif screen_str.lower()  == 'g':
             last_command = 'g'
             break
             
+        #exit back to shell
+        elif screen_str.lower()  == 'x':
+            curses.endwin()
+            sys.stdout = sys.__stdout__
+            exit()
+            
         #handle set execution delay (sd) command - format:  sd delay_in_ms
-        elif screen_str.startswith('sd '):
+        elif screen_str.lower().startswith('sd '):
             napms_delay = int(screen_str[3:])
             cmd_window.addstr(2, 2, "Delay set to "+screen_str[3:]+" ms")
             
         #handle set breakpoint (sb) command - format:  sb breakpoint_address_to_stop_at
         #address is in form of string of 1-6 hex digits
-        elif screen_str.startswith('sb '):
+        elif screen_str.lower().startswith('sb '):
             addr = screen_str[3:].rjust(6,'0').upper()
             breakpoints.append(addr)
             cmd_window.addstr(2, 2, "Breakpoints: ")
@@ -2642,7 +2669,7 @@ while True:
         #handle clear breakpoint (cb) command - format:  cb breakpoint_address_to_clear
         #or   cb all   to clear ALL breakpoints
         #address is in form of string of 1-6 hex digits
-        elif screen_str.startswith('cb '):
+        elif screen_str.lower().startswith('cb '):
             addr = screen_str[3:].rjust(6,'0').upper()
             try:
                 if addr != '000ALL':
@@ -2655,22 +2682,22 @@ while True:
                 cmd_window.addstr(2, 2, "Breakpoint Not Found")
                 
         #handle display breakpoints (db) command - format:  db
-        elif screen_str == 'db':
+        elif screen_str.lower() == 'db':
             cmd_window.addstr(2, 2, "Breakpoints: ")
             cmd_window.addstr(2, 15, str(breakpoints))
 
         #handle display memory (dm) command - format:  dm start_address_to_display num_of_bytes
         #address is in form of string of 1-6 hex digits
         #number of bytes in form of 1-2 dec digits
-        elif screen_str.startswith('dm '):
+        elif screen_str.lower().startswith('dm '):
             addr, num_of_bytes = screen_str[3:].split(' ')
             addr_int = int(addr,16)
             num_of_bytes_int = int(num_of_bytes)
-            #clamp to a max of 48 bytes
-            if num_of_bytes_int > 48:
-                num_of_bytes_int = 48
-            memory_contents = '[' + ' '.join(instrdata_list[addr_int:addr_int+num_of_bytes_int]) + ']'
-            cmd_window.addstr(2, 2, memory_contents)            
+            #clamp to a max of 96 bytes
+            if num_of_bytes_int > 96: # you can see 96 bytes of memory at once
+                num_of_bytes_int = 96
+            memory_contents = ' ' + ' '.join(instrdata_list[addr_int:addr_int+num_of_bytes_int]) + ' '
+            wrap_and_addstr(cmd_window, 2, 2, memory_contents, 48) # each row can display 16 bytes
             
         #handle display field (df) command - format:  df valid_field_name or df valid_field_name(dsect_reg)
         #example: assume FIELDA is addressed directly off the CSECT base register then 'df FIELDA' means
@@ -2679,7 +2706,7 @@ while True:
         #in symbol_dict, find its start_address, then add contents of dsect pointer R10 to start_address
         #valid_field_name is a data area defined by a DS or DC 
         #and is a key in the symbol_dict dictionary
-        elif screen_str.startswith('df '):
+        elif screen_str.lower().startswith('df '):
             field_list = screen_str[3:].rstrip(')').split('(')
             field = field_list[0]
             try:
@@ -2689,12 +2716,13 @@ while True:
                 else:
                     st_addr_int = cvthex2int(st_addr)
                 field_len_int = cvthex2int(field_len)
-                #clamp to a max of 48 bytes
-                if field_len_int > 48:
-                    field_len_int = 48
-                field_contents = '[' + ' '.join(instrdata_list[st_addr_int:st_addr_int+field_len_int]) + ']'
+                #clamp to a max of 30 bytes
+                if field_len_int > 30:
+                    field_len_int = 30
+                field_contents = ' ' + ' '.join(instrdata_list[st_addr_int:st_addr_int+field_len_int]) + ' '
                 cmd_window.addstr(2, 2, field+" = ")
-                cmd_window.addstr(2, 13, str(field_contents))
+                wrap_and_addstr(cmd_window, 2, 13, field_contents, 48) 
+
             except KeyError:
                 cmd_window.addstr(2, 2, "Field Name Not Found ")
         else:
@@ -2706,5 +2734,5 @@ while True:
         
 if Debug:        
     curses.endwin()
-
+sys.stdout = sys.__stdout__
 exit()

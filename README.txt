@@ -151,10 +151,15 @@ need to add a load point.
 . clear breakpoint (cb) command - format:  cb breakpoint_address_to_clear -or- cb ALL
 . display breakpoints (db) command - format:  db
 . display memory (dm) command - format:  dm start_address_to_display num_of_bytes(dec)
-. display field (df) command - format:  df valid_field_name (valid_field_name is a data area defined by a DS or DC 
-                                                           and is a key in the symbol_dict dictionary)
+. display field (df) command - format:  df valid_field_name 
+(valid_field_name is a data area defined by a DS or DC and is a key in the symbol_dict dictionary)
+. exit debug mode (x) command
+
 Note:
 the go (g) command is normally used after setting 1 or more breakpoints 
+
+Second note:
+Commands work both in lower or UPPERCASE
 
 -------------------------------------------------------------------------------
 Notes on my user written Supervisor Call (SVC) numbers:
@@ -162,15 +167,15 @@ Notes on my user written Supervisor Call (SVC) numbers:
 Note: S370BALEmulator ONLY recognizes the following user-defined SVC numbers. None of the 
 usual IBM SVC numbers are emulated. 
 
- 255:   print alphanumeric data to terminal (register 0 points to data; register 1 is the data length)
+ 255:   print alphanumeric data to OUTPUT.TXT (register 0 points to data; register 1 is the data length)
 
- 254:   print contents of register 0 to terminal as signed integer
+ 254:   print contents of register 0 to OUTPUT.TXT as signed integer
  
- 253:   print contents of register 0 to terminal as 4 byte hex string
+ 253:   print contents of register 0 to OUTPUT.TXT as 4 byte hex string
 
- 252:   print contents of the cond_code python list
+ 252:   print contents of the cond_code python list to OUTPUT.TXT
 
- 251:   print the contents of the regs python list
+ 251:   print the contents of the regs python list to OUTPUT.TXT
 
  250:   sleep for x ms  (register 0 is loaded with the number of ms to sleep)
 
@@ -198,9 +203,6 @@ usual IBM SVC numbers are emulated.
 
 
 Important Notes: 1) It is easy to add your own SVC routines to do anything you like. 
-                 2) SVCs 254 - 251 do not display their output immediately in interactive
-                    debug mode (it is queued up due to ncurses). If you are running
-                    under Windows, only after the program ends will you see the output.
-                    If you are running under Linux, the output gets lost (need to research).
-
+                 2) SVCs 252 - 251 do not display their output immediately in interactive
+                    debug mode, because you can see your registers and condition code clearly.
 ------------------------------------------------------------------------------
