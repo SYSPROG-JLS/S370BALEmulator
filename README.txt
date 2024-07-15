@@ -1,6 +1,6 @@
 # 
 # This file is part of the S370BALEmulator distribution.
-# Copyright (c) 2021 James Salvino.
+# Copyright (c) 2024 James Salvino.
 # 
 # This program is free software: you can redistribute it and/or modify  
 # it under the terms of the GNU General Public License as published by  
@@ -57,6 +57,9 @@ S370BALEmulator README
     
     Running in interactive debug mode brings up the terminal user interface to
     display reqisters, memory, and allow you to set breakpoints, etc.
+
+    You can also add -trace to either of the two ways to run the emulator.
+    This will print a trace of program counter and instruction with operands to stdout
 
 - S370BALEmulator.py requires 3 Python data structures in your current
     working directory:
