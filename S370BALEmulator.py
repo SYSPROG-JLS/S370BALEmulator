@@ -1,8 +1,8 @@
 # 
-# S370BALEmulator V3.R1.M2
+# S370BALEmulator V3.R1.M3
 #
 # This file is part of the XXX distribution (https://github.com/xxxx or http://xxx.github.io).
-# Copyright (c) 2021 James Salvino.
+# Copyright (c) 2024 James Salvino.
 # 
 # This program is free software: you can redistribute it and/or modify  
 # it under the terms of the GNU General Public License as published by  
@@ -97,15 +97,19 @@ save_program_counter = 0
 Execute_list = []
 
 Debug = False
+Trace = False
 
 term_output = ''
 
 # Process Command Line parameters
 #  -debug  enables the interactive Curses-based debugger
+#  -trace  enables the trace facility
 if len(sys.argv)-1 > 0:
     if '-debug' in sys.argv:
         Debug = True
-
+    if '-trace' in sys.argv:
+        Trace = True
+        
 # Important:
 # A zero in any of the X2, B1, or B2 fields indicates
 # the absence of the corresponding address component.
@@ -2563,7 +2567,10 @@ while True:
         screen_last_instr = source_code_dict[screen_program_counter]
     except KeyError:
         screen_last_instr = '????'
-        
+
+    if Trace:
+        print('** Trace **: ', screen_program_counter, screen_last_instr)    
+
     if screen_program_counter in breakpoints:
         hit_on_breakpoint = True
         
