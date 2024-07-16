@@ -2504,6 +2504,9 @@ file_handle_dict = {}
 breakpoints = []
 hit_on_breakpoint = False
 
+reg_breakpoints = {}
+hit_on_reg_breakpoint = False
+
 last_command = ''
 
 napms_delay = 1000
@@ -2583,7 +2586,22 @@ while True:
         screen_cond_code = str(cond_code.index('1'))
     except ValueError:
         screen_cond_code = 'Not Set'
-        
+
+    if len(reg_breakpoints) > 0:
+        for k in reg_breakpoints.keys():
+            if reg_breakpoints[k].startswith('0D'):
+                v_bp = int(reg_breakpoints[k][2:])
+            elif reg_breakpoints[k].startswith('0X'):
+                v_bp = int(reg_breakpoints[k][2:], 16)
+            else:
+                print('Invalid breakpoint value type')
+            v_reg = regs[int(k)]
+            if isinstance(v_reg, str):
+                v_reg = int(v_reg, 16)
+            if v_reg == v_bp:
+                hit_on_reg_breakpoint = True
+                break
+                
     if not Debug:
         continue
         
@@ -2630,14 +2648,26 @@ while True:
         term_output = ''
         cmd_window.refresh()
         
-        #if no hit on breakpoint and last command = go (g) then keep going
-        if not hit_on_breakpoint: 
+        #if no hit on breakpoint and no hit on register breakpoint and last command = go (g) then keep going
+        if not hit_on_breakpoint and not hit_on_reg_breakpoint: 
             if last_command == 'g':
                 curses.napms(napms_delay)
                 break
         else:
-            hit_on_breakpoint = False
+            if hit_on_breakpoint:
+                hit_on_breakpoint = False
+            if hit_on_reg_breakpoint:
+                hit_on_reg_breakpoint = False
             last_command = ''
+
+        #if no hit on register breakpoint and last command = go (g) then keep going
+        #if not hit_on_reg_breakpoint: 
+        #    if last_command == 'g':
+        #        curses.napms(napms_delay)
+        #        break
+        #else:
+        #    hit_on_reg_breakpoint = False
+        #    last_command = ''
             
         #read the command     
         screen_str = cmd_window.getstr(1, 11, 30).decode("utf-8")
@@ -2673,6 +2703,15 @@ while True:
             cmd_window.addstr(2, 2, "Breakpoints: ")
             cmd_window.addstr(2, 15, str(breakpoints))
 
+        #handle set reg breakpoint (srb) command - format:  srb breakpoint_reg_to_check:breakpoint_reg_value
+        #register in the form of single hex digit 0-F
+        #value in the form of '0d1234' for decimal value or '0x12ff' for hex value
+        elif screen_str.lower().startswith('srb '):
+            (r, v) = screen_str[4:].upper().split(':')
+            reg_breakpoints[r] = v
+            cmd_window.addstr(2, 2, "Reg Breakpoints: ")
+            cmd_window.addstr(2, 19, str(reg_breakpoints))
+
         #handle clear breakpoint (cb) command - format:  cb breakpoint_address_to_clear
         #or   cb all   to clear ALL breakpoints
         #address is in form of string of 1-6 hex digits
@@ -2687,11 +2726,31 @@ while True:
                 cmd_window.addstr(2, 15, str(breakpoints))
             except ValueError:
                 cmd_window.addstr(2, 2, "Breakpoint Not Found")
+
+        #handle clear reg breakpoint (crb) command - format:  crb breakpoint_reg_to_clear
+        #or   crb all   to clear ALL register breakpoints
+        #register in the form of single hex digit 0-F
+        elif screen_str.lower().startswith('crb '):
+            r = screen_str[4:].upper()
+            try:
+                if r != 'ALL':
+                    del(reg_breakpoints[r])
+                else:
+                    reg_breakpoints = {}
+                cmd_window.addstr(2, 2, "Reg Breakpoints: ")
+                cmd_window.addstr(2, 19, str(reg_breakpoints))
+            except ValueError:
+                cmd_window.addstr(2, 2, "Reg Breakpoint Not Found")
                 
         #handle display breakpoints (db) command - format:  db
         elif screen_str.lower() == 'db':
             cmd_window.addstr(2, 2, "Breakpoints: ")
             cmd_window.addstr(2, 15, str(breakpoints))
+
+        #handle display register breakpoints (drb) command - format:  drb
+        elif screen_str.lower() == 'drb':
+            cmd_window.addstr(2, 2, "Reg Breakpoints: ")
+            cmd_window.addstr(2, 19, str(reg_breakpoints))
 
         #handle display memory (dm) command - format:  dm start_address_to_display num_of_bytes
         #address is in form of string of 1-6 hex digits
