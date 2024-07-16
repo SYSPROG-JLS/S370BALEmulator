@@ -153,6 +153,9 @@ need to add a load point.
 . set breakpoint (sb) command - format:  sb breakpoint_address_to_stop_at
 . clear breakpoint (cb) command - format:  cb breakpoint_address_to_clear -or- cb ALL
 . display breakpoints (db) command - format:  db
+. set register breakpoint (srb) command - format:  srb register_to_trace:target_value
+. clear register breakpoint (crb) command - format:  crb register_to_clear -or- cb ALL
+. display register breakpoints (drb) command - format:  drb
 . display memory (dm) command - format:  dm start_address_to_display num_of_bytes(dec)
 . display field (df) command - format:  df valid_field_name 
 (valid_field_name is a data area defined by a DS or DC and is a key in the symbol_dict dictionary)
@@ -164,7 +167,15 @@ the go (g) command is normally used after setting 1 or more breakpoints
 Second note:
 Commands work both in lower or UPPERCASE
 
+Third note:
+Here are some examples on how to use the srb command:
+   srb 6:0d10    - stop execution when register 6 has the value decimal 10
+   srb 6:0x1ff   - stop execution when register 6 has the value hex 1ff
+To clear a register breakpoint issue the crb command in this format:
+   crb 6         - clear the register breakpoint for register 6
+
 -------------------------------------------------------------------------------
+
 Notes on my user written Supervisor Call (SVC) numbers:
 
 Note: S370BALEmulator ONLY recognizes the following user-defined SVC numbers. None of the 
