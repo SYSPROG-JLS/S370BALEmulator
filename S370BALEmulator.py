@@ -1,8 +1,8 @@
 # 
-# S370BALEmulator V3.R1.M3
+# S370BALEmulator V3.R1.M4
 #
 # This file is part of the XXX distribution (https://github.com/xxxx or http://xxx.github.io).
-# Copyright (c) 2024 James Salvino.
+# Copyright (c) 2026 James Salvino.
 # 
 # This program is free software: you can redistribute it and/or modify  
 # it under the terms of the GNU General Public License as published by  
