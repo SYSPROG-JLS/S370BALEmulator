@@ -174,6 +174,14 @@ Here are some examples on how to use the srb command:
 To clear a register breakpoint issue the crb command in this format:
    crb 6         - clear the register breakpoint for register 6
 
+Forth note:  (NEW FOR 2026)
+The set breakpoint (sb) & set register breakpoint (srb) commands
+can be placed in a file named "breakpoints.txt" which will be read in
+at execution time to populate the breakpoint data structures. If used
+this file must reside in the same directory as your ".p" files. The
+commands in the file are in the exact same format as if you typed
+them in during the interactive debug session.
+
 -------------------------------------------------------------------------------
 
 Notes on my user written Supervisor Call (SVC) numbers:
