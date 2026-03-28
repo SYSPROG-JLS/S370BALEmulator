@@ -21,6 +21,7 @@ import os
 import sys
 import pickle
 import curses
+from pathlib import Path
 
 # output to file(works on Linux too)
 sys.stdout = open("OUTPUT.TXT", 'w')
@@ -2512,6 +2513,31 @@ last_command = ''
 napms_delay = 1000
 
 if Debug:
+    # check if Breakpoint file exists
+    file_path = Path("breakpoints.txt")
+    # if Breakpoint file exists load up the breakpoints data structures
+    if file_path.is_file():
+        print("The breakpoints file exists.")
+        print("Processing breakpoints file.")
+        with open(file_path, 'r') as file:
+            for line in file:
+                line = line.strip()
+                if line.lower().startswith('sb '):
+                    addr = line[3:].rjust(6,'0').upper()
+                    breakpoints.append(addr)
+                elif line.lower().startswith('srb '):
+                    (r, v) = line[4:].upper().split(':')
+                    reg_breakpoints[r] = v
+                else:
+                    print("Invalid breakpoint command encountered")
+                    print("while processing breakpoints file")
+                    print("Line in error: ", line)
+                    print("Aborting")
+                    exit()
+        print("Successfully processed breakpoints file, continuing.")
+    else:
+        print("No breakpoints file found, continuing.")
+     
     # create Main Window
     screen = curses.initscr()
 
